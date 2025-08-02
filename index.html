@@ -3,25 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Monster Fighter RPG Game</title>
+        <title>Exerbeasts</title>
         <link rel="stylesheet" href="css/styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     </head>
     <body>
         <div class="game-container">
-            <!-- Title Banner -->
-            <header class="title-banner">
-                <h1>Battlefit</h1>
-            </header>
-
-            <!-- Main Content Area -->
+            <!-- Main Content Area  -->
+             
             <main class="main-content">
                 <!-- Game Canvas (Left Side) -->
                 <section class="game-canvas-container">
-                    <div class="game-canvas">
-                        <div class="canvas-placeholder">
-                            🎮 Game Canvas Area<br>
-                            <small>Monster battles will happen here</small>
-                        </div>
+                    <div class="game-canvas" id="game-canvas">
+                        <!-- Phaser.js will render here -->
                     </div>
                 </section>
 
@@ -40,8 +34,7 @@
                     <div class="fitness-pal-panel">
                         <h2>Fitness PAL</h2>
                         <div class="pal-content">
-                            🤖 AI Trainer<br>
-                            <small>Gemini AI assistant will be embedded here</small>
+                            <img class="pal-img" src="images/mole1.png">
                         </div>
                     </div>
                 </aside>

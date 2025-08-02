@@ -9,8 +9,9 @@ body {
     font-family: 'Courier New', 'Arial', monospace;
     background: #000000; /* Classic Black */
     min-height: 100vh;
-    overflow: hidden;
     color: #FFFFFF; /* Bright White text */
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 /* Main container */
@@ -21,11 +22,12 @@ body {
     padding: 20px;
     gap: 20px;
     background: #000000; /* Classic Black */
+    min-width: 800px; /* Minimum width for game canvas */
 }
 
 /* Title banner */
 .title-banner {
-    background: #8E24AA; /* Arcade Purple */
+    background: #31023e; /* Arcade Purple */
     color: #FFFFFF; /* Bright White */
     text-align: center;
     padding: 15px;
@@ -47,6 +49,7 @@ body {
     flex: 1;
     gap: 20px;
     min-height: 0; /* Important for flex child */
+    align-items: stretch; /* Stretch children to same height */
 }
 
 /* Game canvas area */
@@ -55,6 +58,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    height: 100%; /* Take full height */
 }
 
 .game-canvas {
@@ -67,6 +71,9 @@ body {
     justify-content: center;
     position: relative;
     overflow: hidden;
+    min-height: 400px; /* Ensure minimum height */
+    width: 100%;
+    height: 100%;
 }
 
 .game-canvas::before {
@@ -80,8 +87,8 @@ body {
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 172, 193, 0.1) 2px,
-        rgba(0, 172, 193, 0.1) 4px
+        rgba(0, 172, 193, 0.2) 2px,
+        rgba(0, 172, 193, 0.2) 4px
     );
     animation: scanline 2s linear infinite;
 }
@@ -106,7 +113,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    min-width: 300px;
+    min-width: 250px; /* Reduced minimum width for better responsiveness */
+    height: 100%; /* Take full height */
 }
 
 /* Webcam panel */
@@ -176,47 +184,79 @@ body {
 }
 
 /* Responsive design */
+@media (max-width: 1200px) {
+    .game-container {
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .title-banner h1 {
+        font-size: 2.2rem;
+    }
+    
+    .right-sidebar {
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .game-container {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .title-banner h1 {
+        font-size: 2rem;
+    }
+    
+    .main-content {
+        gap: 15px;
+    }
+    
+    .right-sidebar {
+        min-width: 180px;
+    }
+    
+    .webcam-panel h2 {
+        font-size: 1.1rem;
+    }
+    
+    .fitness-pal-panel h2 {
+        font-size: 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .game-container {
         padding: 10px;
-        gap: 15px;
+        gap: 10px;
+        min-width: 600px; /* Adjust minimum width for smaller screens */
     }
 
     .title-banner h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
     }
 
     .main-content {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
+    }
+    
+    .game-canvas-container {
+        min-height: 400px; /* Ensure minimum height for game canvas */
     }
 
     .right-sidebar {
         min-width: auto;
         flex-direction: row;
+        gap: 12px;
     }
 
     .webcam-panel,
     .fitness-pal-panel {
         flex: 1;
-    }
-
-    .webcam-feed {
-        height: 150px;
-    }
-
-    .pal-content {
-        min-height: 120px;
-    }
-}
-
-@media (max-width: 480px) {
-    .title-banner h1 {
-        font-size: 1.5rem;
-    }
-
-    .right-sidebar {
-        flex-direction: column;
+        padding: 15px;
     }
 
     .webcam-feed {
@@ -225,6 +265,69 @@ body {
 
     .pal-content {
         min-height: 100px;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-container {
+        min-width: 500px;
+        padding: 8px;
+        gap: 8px;
+    }
+    
+    .title-banner {
+        padding: 10px;
+    }
+    
+    .title-banner h1 {
+        font-size: 1.5rem;
+    }
+    
+    .main-content {
+        gap: 8px;
+    }
+    
+    .right-sidebar {
+        gap: 8px;
+    }
+    
+    .webcam-panel,
+    .fitness-pal-panel {
+        padding: 10px;
+    }
+    
+    .webcam-feed {
+        height: 100px;
+    }
+    
+    .pal-content {
+        min-height: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        min-width: 400px;
+        padding: 5px;
+        gap: 5px;
+    }
+    
+    .title-banner h1 {
+        font-size: 1.2rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .right-sidebar {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .webcam-feed {
+        height: 80px;
+    }
+    
+    .pal-content {
+        min-height: 60px;
     }
 }
 
@@ -249,3 +352,16 @@ body {
     transform: translateY(-2px);
     transition: all 0.2s ease;
 } 
+
+.pal-img {
+    width: 70%;
+}
+
+/* Ensure Phaser canvas is responsive */
+.game-canvas canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain;
+}
