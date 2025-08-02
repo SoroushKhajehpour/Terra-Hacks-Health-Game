@@ -1,5 +1,4 @@
-;(function(global) {
-class Feedback {
+export class Feedback {
   constructor(apiKey) {
     // Accept API key as argument, or try window.GEMINI_API_KEY, or empty string
     this.GEMINI_API_KEY = apiKey || (typeof window !== 'undefined' && window.GEMINI_API_KEY) || '';
@@ -11,28 +10,28 @@ class Feedback {
      * @returns {Promise<{feedback: string, mood: string}>} - Feedback text and mood (happy/neutral/sad)
      */
     async analyzeFitnessImage(imageFile, position = 'unknown') {
-
         if (!this.GEMINI_API_KEY) {
             throw new Error('Gemini API key not set. Call setGeminiApiKey(key) first.');
         }
-
         try {
-            // Convert image to base64
-
-            const imageData = await this.fileToBase64(imageFile);
+            let imageData;
+            if (typeof imageFile === 'string' && imageFile.startsWith('data:')) {
+                // Already a data URL
+                imageData = imageFile;
+            } else {
+                // Convert Blob/File to data URL
+                imageData = await this.fileToBase64(imageFile);
+            }
             // Analyze with Gemini
             const result = await this.analyzeWithGemini(imageData, position);
-            // Speak the feedback
-            this.speakFeedback(result.feedback);
+            // Only return feedback, do not speak it here
             return {
                 feedback: result.feedback,
                 mood: result.mood
             };
-            
         } catch (error) {
             console.error('Error analyzing image:', error);
             const errorMsg = "Sorry, I couldn't analyze that image!";
-            speakFeedback(errorMsg);
             return {
                 feedback: errorMsg,
                 mood: "sad"
@@ -127,24 +126,22 @@ class Feedback {
         if ('speechSynthesis' in window) {
             // Cancel any ongoing speech
             window.speechSynthesis.cancel();
-            
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 0.9;
-            utterance.pitch = 1.2; // Slightly higher pitch for friendly voice
+            utterance.pitch = 1.5; // Higher pitch for friendlier voice
             utterance.volume = 0.8;
-            
-            // Try to get a better voice
+            // Try to get a higher-pitched (female or child) voice
             const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(voice => 
-                voice.name.includes('Google') || 
-                voice.name.includes('Female') ||
-                (voice.lang.startsWith('en') && voice.name.includes('US'))
+            const preferredVoice = voices.find(voice =>
+                (voice.name.toLowerCase().includes('female') ||
+                 voice.name.toLowerCase().includes('child') ||
+                 voice.name.toLowerCase().includes('girl') ||
+                 voice.name.toLowerCase().includes('woman') ||
+                 (voice.lang.startsWith('en') && voice.name.toLowerCase().includes('us') && voice.name.toLowerCase().includes('female')))
             );
-            
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
             }
-            
             window.speechSynthesis.speak(utterance);
         } else {
             console.warn('Speech synthesis not supported in this browser');
@@ -158,7 +155,3 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         // Voices are now loaded
     });
 }
-
-// Make Feedback globally accessible for direct file usage
-global.Feedback = Feedback;
-})(typeof window !== 'undefined' ? window : this);

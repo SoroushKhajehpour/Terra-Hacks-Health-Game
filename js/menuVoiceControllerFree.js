@@ -1,27 +1,77 @@
 // Free alternative to Gemini for voice command mapping using Web Speech API and simple keyword matching
 // This does not require any external AI service or API key
 
-;(function(global) {
-class MenuVoiceControllerFree {
+export class MenuVoiceControllerFree {
     constructor() {
-        this.commands = ['start', 'exit'];
+        this.commands = ['start', 'exit', 'squat', 'lunge', 'plank', 't-pose'];
     }
 
     /**
-     * Records audio, transcribes to text using Web Speech API, maps to command, and returns result
-     * @returns {Promise<string>} mapped command ("start", "exit", or "none")
+     * Continuously listens for a command until a valid one is detected or stopped.
+     * Returns { transcript, command } when a valid command is detected.
      */
-    async listenAndMapCommand() {
-        try {
-            const transcript = await this.recordAndTranscribe();
-            const command = this.mapTextToCommand(transcript);
-            this.speakCommand(command);
-            return { transcript, command };
-        } catch (error) {
-            console.error('Error in listenAndMapCommand:', error);
-            this.speakCommand('Sorry, I could not process your command.');
-            return { transcript: '', command: 'none' };
-        }
+    listenAndMapCommand(validCommands = ['squat', 'lunge', 'plank', 'tpose']) {
+        return new Promise((resolve, reject) => {
+            const root = typeof window !== 'undefined' ? window : global;
+            if (!('webkitSpeechRecognition' in root || 'SpeechRecognition' in root)) {
+                reject(new Error('Web Speech API is not supported in this browser.'));
+                return;
+            }
+            const SpeechRecognition = root.SpeechRecognition || root.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            let stopped = false;
+            let isRecognizing = false;
+
+            const safeStart = () => {
+                if (!isRecognizing) {
+                    try {
+                        recognition.start();
+                        isRecognizing = true;
+                    } catch (e) {
+                        // Ignore if already started
+                    }
+                }
+            };
+
+            recognition.onstart = () => {
+                isRecognizing = true;
+            };
+            recognition.onend = () => {
+                isRecognizing = false;
+                if (!stopped) {
+                    setTimeout(() => {
+                        if (!stopped) safeStart();
+                    }, 400);
+                }
+            };
+            recognition.onresult = event => {
+                const transcript = event.results[0][0].transcript;
+                const command = this.mapTextToCommand(transcript);
+                if (validCommands.includes(command)) {
+                    stopped = true;
+                    recognition.stop();
+                    resolve({ transcript, command });
+                } else {
+                    setTimeout(() => {
+                        if (!stopped) safeStart();
+                    }, 400);
+                }
+            };
+            recognition.onerror = event => {
+                if (event.error === 'no-speech' || event.error === 'no-match') {
+                    setTimeout(() => {
+                        if (!stopped) safeStart();
+                    }, 400);
+                } else {
+                    stopped = true;
+                    reject(new Error('Speech recognition error: ' + event.error));
+                }
+            };
+            safeStart();
+        });
     }
 
     /**
@@ -65,35 +115,20 @@ class MenuVoiceControllerFree {
         if (/\b(exit|quit|end|stop)\b/.test(text)) {
             return 'exit';
         }
-        return 'none';
-    }
-
-    /**
-     * Use text-to-speech to speak the mapped command
-     */
-    speakCommand(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            utterance.volume = 0.9;
-            const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(voice =>
-                voice.name.includes('Google') ||
-                voice.name.includes('Female') ||
-                (voice.lang.startsWith('en') && voice.name.includes('US'))
-            );
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
-            }
-            window.speechSynthesis.speak(utterance);
-        } else {
-            console.warn('Speech synthesis not supported in this browser');
+        if (/\b(squat)\b/.test(text)) {
+            return 'squat';
         }
+        if (/\b(lunge)\b/.test(text)) {
+            return 'lunge';
+        }
+        if (/\b(plank)\b/.test(text)) {
+            return 'plank';
+        }
+        if (/\b(t-pose|t pose|tpose|tee pose|teepose)\b/.test(text)) {
+            return 't-pose';
+        }
+        return 'none';
     }
 }
 
-// Make MenuVoiceControllerFree globally accessible
-global.MenuVoiceControllerFree = MenuVoiceControllerFree;
-})(typeof window !== 'undefined' ? window : this);
+// No global export needed for ES module
