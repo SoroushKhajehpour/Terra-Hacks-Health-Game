@@ -60,12 +60,11 @@ body {
     gap: 15px;
     height: 100%; /* Take full height */
     position: relative; /* For absolute positioned battle interface */
+    background-color: #000000;
 }
 
 .game-canvas {
     flex: 1;
-    background: #000000; /* Classic Black */
-    border: 3px solid #00ACC1; /* Retro Teal */
     box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 6px #FF9800; /* White and Pixel Orange outlines */
     display: flex;
     align-items: center;
