@@ -277,6 +277,9 @@ let playerHPBarGraphics;
 function preload() {
     console.log('Preloading assets...');
     this.load.image('forest-background', 'assets/forest-background.jpg');
+    this.load.image('player-monster', 'assets/sprites/Pink_Monster/Pink_Monster.png');
+    this.load.image('enemy-monster', 'assets/sprites/Owlet_Monster/Owlet_Monster.png');
+
 }
 
 function create() {
@@ -306,7 +309,7 @@ function createBackground(scene) {
     
     // Add border around the background image
     const backgroundBorder = scene.add.graphics();
-    backgroundBorder.lineStyle(6, 0x8E24AA);
+    backgroundBorder.lineStyle(6, 0x00ACC1);
     backgroundBorder.strokeRect(0, 0, 800, 460);
 }
 
@@ -315,9 +318,9 @@ function createPlatforms(scene) {
     // Enemy platform (top-right)
     const enemyPlatform = scene.add.graphics();
     enemyPlatform.fillStyle(0x2E7D32);
-    enemyPlatform.fillEllipse(600, 150, 120, 60);
+    enemyPlatform.fillEllipse(570, 230, 120, 60);
     enemyPlatform.lineStyle(3, 0xFFFFFF);
-    enemyPlatform.strokeEllipse(600, 150, 120, 60);
+    enemyPlatform.strokeEllipse(570, 230, 120, 60);
     
     // Player platform (bottom-left)
     const playerPlatform = scene.add.graphics();
@@ -329,19 +332,17 @@ function createPlatforms(scene) {
 
 // Monster Creation
 function createMonsters(scene) {
-    // Player monster (bottom-left platform)
-    const playerMonster = scene.add.graphics();
-    playerMonster.fillStyle(0x8E24AA);
-    playerMonster.fillCircle(200, 350, 30);
-    playerMonster.lineStyle(3, 0xFFFFFF);
-    playerMonster.strokeCircle(200, 350, 30);
+    // Player monster (bottom-left platform) - Now uses sprite image
+    const playerMonster = scene.add.image(200, 350, 'player-monster');
+    playerMonster.setOrigin(0.5, 0.9); // Center the image
+    playerMonster.setScale(4.5); // Adjust scale as needed (0.5 = 50% of original size)
     
     // Enemy monster (top-right platform)
-    const enemyMonster = scene.add.graphics();
-    enemyMonster.fillStyle(0xFF9800);
-    enemyMonster.fillCircle(600, 150, 25);
-    enemyMonster.lineStyle(3, 0xFFFFFF);
-    enemyMonster.strokeCircle(600, 150, 25);
+    const enemyMonster = scene.add.image(565, 225, 'enemy-monster');
+    enemyMonster.setOrigin(0.5, 0.9); // Center the image
+    enemyMonster.setScale(3.5); // Adjust scale as needed (0.5 = 50% of original size)
+    
+
 }
 
 // UI Creation - CLEAN IMPLEMENTATION
