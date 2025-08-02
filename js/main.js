@@ -1,71 +1,147 @@
-// Placeholder JavaScript for future functionality
-console.log('Monster Fighter RPG Game - Layout Loaded');
+// Teachable Machine model URL - replace with your model URL
+const URL = "https://teachablemachine.withgoogle.com/models/A3XU72N3c/";
+let model, webcam, ctx, labelContainer, maxPredictions;
 
-// Future functionality placeholders:
+// Initialize Teachable Machine model and webcam
+async function initTeachableMachine() {
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
 
-// TODO: Initialize webcam feed
-// function initializeWebcam() {
-//     // Webcam initialization code will go here
-//     // Pose detection using MediaPipe or similar
-// }
+    try {
+        // Load the model and metadata
+        model = await tmPose.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
 
-// TODO: Initialize Fitness PAL (Gemini AI)
-// function initializeFitnessPAL() {
-//     // Gemini API integration will go here
-//     // Voice interaction and AI responses
-// }
+        // Set up webcam
+        const size = 400;
+        const flip = true; // whether to flip the webcam
+        webcam = new tmPose.Webcam(size, size, flip);
+        await webcam.setup();
+        await webcam.play();
+        
+        // Append webcam element
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        
+        // Set up label container (but don't display predictions)
+        labelContainer = document.getElementById("label-container");
+        
+        // Start prediction loop
+        window.requestAnimationFrame(loop);
+        
+        console.log("Camera and pose detection initialized successfully!");
+        
+    } catch (error) {
+        console.error("Error initializing Teachable Machine:", error);
+        document.getElementById("webcam-container").innerHTML = 
+            "<p style='color: red;'>Error loading pose detection model. Please check the model URL.</p>";
+    }
+}
 
-// TODO: Update action banner dynamically
-// function updateActionBanner(exercise) {
-//     // Update the bottom banner based on detected pose
-//     // This will be called when pose detection identifies an exercise
-// }
+// Main prediction loop
+async function loop() {
+    webcam.update();
+    await predict();
+    window.requestAnimationFrame(loop);
+}
 
-// TODO: Game canvas rendering
-// function renderGameCanvas() {
-//     // Monster battles and game graphics will be rendered here
-//     // Using HTML5 Canvas or similar
-// }
+// Predict pose from webcam feed
+async function predict() {
+    try {
+        const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+        const prediction = await model.predict(posenetOutput);
+        
+        // Find the pose with highest confidence (don't display predictions under webcam)
+        let highestConfidence = 0;
+        let detectedPose = "";
+        
+        for (let i = 0; i < maxPredictions; i++) {
+            if (prediction[i].probability > highestConfidence) {
+                highestConfidence = prediction[i].probability;
+                detectedPose = prediction[i].className;
+            }
+        }
+        
+        // Update the game canvas pose display
+        updatePoseDisplay(detectedPose, highestConfidence);
+        
+        // Log detected pose if confidence is high enough
+        if (highestConfidence > 0.7) {
+            console.log(`Detected pose: ${detectedPose} (${(highestConfidence * 100).toFixed(1)}% confidence)`);
+        }
+        
+    } catch (error) {
+        console.error("Prediction error:", error);
+    }
+}
 
-// TODO: Pose detection and exercise classification
-// function detectPose(landmarks) {
-//     // Analyze pose landmarks to classify exercises
-//     // Squats, jumping jacks, etc.
-// }
+// Update the pose display in the game canvas
+function updatePoseDisplay(pose, confidence) {
+    const poseTextElement = document.querySelector('.pose-text');
+    const confidenceTextElement = document.querySelector('.confidence-text');
+    
+    if (!poseTextElement || !confidenceTextElement) return;
+    
+    // Update text content
+    if (confidence > 0.5) {
+        poseTextElement.textContent = pose;
+        confidenceTextElement.textContent = `${(confidence * 100).toFixed(1)}% Confidence`;
+    } else {
+        poseTextElement.textContent = "No Pose Detected";
+        confidenceTextElement.textContent = "0% Confidence";
+    }
+    
+    // Define colors for different poses
+    const poseColors = {
+        'Squat': '#FF4444',      // Red
+        'Lunge': '#44FF44',      // Green  
+        'T-Pose': '#4444FF',     // Blue
+        'Stand': '#FFFFFF',      // White
+        'Plank': '#44FFFF',      // Cyan
+        'default': '#FFFFFF'     // White
+    };
+    
+    // Set color based on pose (case-insensitive)
+    const normalizedPose = pose.toLowerCase();
+    let color = poseColors['default'];
+    
+    for (const [poseName, poseColor] of Object.entries(poseColors)) {
+        if (normalizedPose.includes(poseName.toLowerCase())) {
+            color = poseColor;
+            break;
+        }
+    }
+    
+    // Apply color with confidence-based intensity
+    if (confidence > 0.5) {
+        poseTextElement.style.color = color;
+        confidenceTextElement.style.color = color;
+    } else {
+        poseTextElement.style.color = '#666666'; // Gray for low confidence
+        confidenceTextElement.style.color = '#666666';
+    }
+}
 
-// TODO: Voice interaction
-// function handleVoiceCommand(command) {
-//     // Process voice commands from Fitness PAL
-//     // Update game state based on commands
-// }
-
-// TODO: Monster battle system
-// function startMonsterBattle() {
-//     // Initialize turn-based combat system
-//     // Monster attacks vs player exercises
-// }
-
-// TODO: Score and progress tracking
-// function updateScore(points) {
-//     // Track player progress and achievements
-//     // Save to local storage or database
-// }
-
-// TODO: Responsive layout adjustments
-// function handleResize() {
-//     // Adjust layout for different screen sizes
-//     // Optimize for mobile devices
-// }
-
-// import the menu voice controller file
-import { VoiceCommandController } from './menu-voice-controller.js';
-
-// Event listeners for future implementation
-window.addEventListener('load', function() {
-    console.log('Game layout ready for functionality implementation');
-});
-
-window.addEventListener('resize', function() {
-    // TODO: Handle responsive layout changes
-    console.log('Window resized - layout adjustments may be needed');
+// Initialize when page loads
+window.addEventListener('DOMContentLoaded', async function() {
+    console.log('Page loaded - Menu screen active');
+    
+    // Setup start button to initialize camera when clicked
+    const startButton = document.getElementById('startButton');
+    if (startButton) {
+        startButton.addEventListener('click', async function() {
+            console.log('Starting game - Initializing camera and pose detection...');
+            
+            // Show game container and hide menu
+            const mainMenu = document.getElementById('mainMenu');
+            const gameContainer = document.getElementById('gameContainer');
+            
+            if (mainMenu && gameContainer) {
+                mainMenu.style.display = 'none';
+                gameContainer.style.display = 'flex';
+                
+                // Initialize the camera and pose detection after game starts
+                await initTeachableMachine();
+            }
+        });
+    }
 }); 
