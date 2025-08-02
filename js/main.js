@@ -9,7 +9,7 @@ const BATTLE_CONFIG = {
     type: Phaser.AUTO,
     parent: 'game-canvas',
     width: 800,
-    height: 460, // Reduced height to account for 140px battle interface
+    height: 680, // Reduced height to account for 140px battle interface
     pixelArt: true,
     backgroundColor: '#000000',
     
