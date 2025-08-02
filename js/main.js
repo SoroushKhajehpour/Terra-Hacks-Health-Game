@@ -57,8 +57,17 @@ console.log('Monster Fighter RPG Game - Layout Loaded');
 //     // Optimize for mobile devices
 // }
 
-// import the menu voice controller file
-import { VoiceCommandController } from './menu-voice-controller.js';
+// import files
+import { MenuVoiceController } from './menuVoiceController.js';
+import { Feedback } from './feedback.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+var menuVoiceController = new MenuVoiceController();
+var feedback = new Feedback();
+
+let GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
 
 // Event listeners for future implementation
 window.addEventListener('load', function() {
