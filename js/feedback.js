@@ -1,4 +1,4 @@
-export class Feedback {
+class Feedback {
   constructor(apiKey) {
     this.GEMINI_API_KEY = apiKey; // Set this to your Gemini API key
   }
@@ -9,20 +9,19 @@ export class Feedback {
      * @returns {Promise<{feedback: string, mood: string}>} - Feedback text and mood (happy/neutral/sad)
      */
     async analyzeFitnessImage(imageFile, position = 'unknown') {
-        if (!GEMINI_API_KEY) {
+
+        if (!this.GEMINI_API_KEY) {
             throw new Error('Gemini API key not set. Call setGeminiApiKey(key) first.');
         }
 
         try {
             // Convert image to base64
-            const imageData = await fileToBase64(imageFile);
-            
+
+            const imageData = await this.fileToBase64(imageFile);
             // Analyze with Gemini
-            const result = await analyzeWithGemini(imageData, position);
-            
+            const result = await this.analyzeWithGemini(imageData, position);
             // Speak the feedback
-            speakFeedback(result.feedback);
-            
+            this.speakFeedback(result.feedback);
             return {
                 feedback: result.feedback,
                 mood: result.mood
@@ -89,7 +88,7 @@ export class Feedback {
             }
         };
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -158,4 +157,5 @@ if ('speechSynthesis' in window) {
     });
 }
 
-export { Feedback };
+// Make Feedback globally accessible for direct file usage
+window.Feedback = Feedback;
