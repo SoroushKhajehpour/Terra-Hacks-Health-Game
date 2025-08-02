@@ -49,9 +49,9 @@
                 <!-- Game Canvas (Left Side) -->
                 <section class="game-canvas-container">
                     <div class="game-canvas">
-                        <div class="canvas-placeholder">
-                            🎮 Game Canvas Area<br>
-                            <small>Monster battles will happen here</small>
+                        <div id="pose-display" class="pose-display">
+                            <div class="pose-text">No Pose Detected</div>
+                            <div class="confidence-text">0% Confidence</div>
                         </div>
                     </div>
                 </section>
@@ -62,8 +62,8 @@
                     <div class="webcam-panel">
                         <h2>Webcam - Image Recognition</h2>
                         <div class="webcam-feed">
-                            📹 Webcam Feed<br>
-                            <small>Pose detection will appear here</small>
+                            <div id="webcam-container"></div>
+                            <div id="label-container"></div>
                         </div>
                     </div>
 
@@ -82,9 +82,6 @@
 
         <!-- Fallback script for testing -->
         <script>
-           
-            
-
             // Test function
             function testMenu() {
                 if (window.mainMenu) {
@@ -116,7 +113,6 @@
                         missingElements.push(id);
                     }
                 });
-                
 
                 // Add fallback click handlers
                 const startButton = document.getElementById('startButton');
@@ -127,10 +123,19 @@
                         testMenuFallback();
                     });
                 }
+                
+                if (exitButton) {
+                    exitButton.addEventListener('click', function() {
+                        window.close();
+                    });
+                }
             });
-
         </script>
 
-        <script type="module" src="js/main.js"></script>
+        <!-- TensorFlow.js and Teachable Machine dependencies -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+        
+        <script src="js/main.js"></script>
     </body>
 </html> 
