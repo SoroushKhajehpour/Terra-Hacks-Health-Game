@@ -3,55 +3,37 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Monster Fighter RPG Game</title>
+        <title>Exerbeasts</title>
         <link rel="stylesheet" href="css/styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
     </head>
     <body>
-        <!-- Error Display -->
-        <div id="errorDisplay" style="position: fixed; top: 10px; right: 10px; background: red; color: white; padding: 10px; z-index: 9999; display: none; max-width: 300px;">
-            <strong>ERROR:</strong> <span id="errorMessage"></span>
-        </div>
-
-        <!-- Main Menu Overlay -->
-        <div id="mainMenu" class="main-menu-overlay">
-            <div class="menu-container">
-                <h1 class="menu-title">Battlefit</h1>
-                <div class="menu-buttons">
-                    <button id="startButton" class="menu-button start-button">
-                        <span class="button-text">START</span>
-                        <span class="button-hint">(or say "start")</span>
-                    </button>
-                    <button id="exitButton" class="menu-button exit-button">
-                        <span class="button-text">EXIT</span>
-                        <span class="button-hint">(or say "exit")</span>
-                    </button>
-                </div>
-                <div class="voice-status">
-                    <span id="voiceStatus" class="status-text">Voice commands ready</span>
-                </div>
-                <!-- Debug button for testing -->
-                <div style="margin-top: 10px;">
-                    <button onclick="testMenu()" style="background: #333; color: #fff; border: 1px solid #666; padding: 5px 10px; font-size: 12px;">
-                        Test Transition
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="game-container" id="gameContainer" style="display: none;">
-            <!-- Title Banner -->
-            <header class="title-banner">
-                <h1>Battlefit</h1>
-            </header>
-
-            <!-- Main Content Area -->
+        <div class="game-container">
+            <!-- Main Content Area  -->
+             
             <main class="main-content">
                 <!-- Game Canvas (Left Side) -->
                 <section class="game-canvas-container">
-                    <div class="game-canvas">
-                        <div id="pose-display" class="pose-display">
-                            <div class="pose-text">No Pose Detected</div>
-                            <div class="confidence-text">0% Confidence</div>
+                    <div class="game-canvas" id="game-canvas">
+                        <!-- Phaser.js will render here -->
+                    </div>
+                    
+                    <!-- Pokemon-style Battle Interface -->
+                    <div id="battle-interface" class="battle-ui-container">
+                        <div class="dialog-section">
+                            <div class="dialog-box">
+                                <p id="battle-text">What will you do?</p>
+                            </div>
+                        </div>
+                        <div class="action-section">
+                            <div class="action-menu">
+                                <button class="action-btn squat-btn" data-move="squat">SQUAT</button>
+                                <button class="action-btn lunge-btn" data-move="lunge">LUNGE</button>
+                                <button class="action-btn plank-btn" data-move="plank">PLANK</button>
+                                <button class="action-btn tpose-btn" data-move="tpose">TPOSE</button>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -61,18 +43,24 @@
                     <!-- Webcam Panel (Top Right) -->
                     <div class="webcam-panel">
                         <h2>Webcam - Image Recognition</h2>
-                        <div class="webcam-feed">
-                            <div id="webcam-container"></div>
-                            <div id="label-container"></div>
+                        <div class="webcam-feed" id="webcam-container">
+                            <div class="webcam-placeholder">
+                                📹 Webcam Feed<br>
+                                <small>Initializing camera...</small>
+                            </div>
                         </div>
+                        <div class="pose-display">
+                            <div class="pose-text">No Pose Detected</div>
+                            <div class="confidence-text">0% Confidence</div>
+                        </div>
+                        <div id="label-container" style="display: none;"></div>
                     </div>
 
                     <!-- Fitness PAL Panel (Bottom Right) -->
                     <div class="fitness-pal-panel">
                         <h2>Fitness PAL</h2>
                         <div class="pal-content">
-                            🤖 AI Trainer<br>
-                            <small>Gemini AI assistant will be embedded here</small>
+                            <img class="pal-img" src="assets/mole1.png">
                         </div>
                     </div>
                 </aside>
@@ -80,62 +68,6 @@
 
         </div>
 
-        <!-- Fallback script for testing -->
-        <script>
-            // Test function
-            function testMenu() {
-                if (window.mainMenu) {
-                    window.mainMenu.testGameTransition();
-                } else {
-                    // Fallback test
-                    testMenuFallback();
-                }
-            }
-
-            // Fallback test function
-            function testMenuFallback() {
-                const mainMenu = document.getElementById('mainMenu');
-                const gameContainer = document.getElementById('gameContainer');
-                
-                if (mainMenu && gameContainer) {
-                    mainMenu.style.display = 'none';
-                    gameContainer.style.display = 'flex';
-                }
-            }
-
-            // Check if elements exist
-            document.addEventListener('DOMContentLoaded', function() {
-                const elements = ['mainMenu', 'gameContainer', 'startButton', 'exitButton'];
-                let missingElements = [];
-                
-                elements.forEach(id => {
-                    if (!document.getElementById(id)) {
-                        missingElements.push(id);
-                    }
-                });
-
-                // Add fallback click handlers
-                const startButton = document.getElementById('startButton');
-                const exitButton = document.getElementById('exitButton');
-                
-                if (startButton) {
-                    startButton.addEventListener('click', function() {
-                        testMenuFallback();
-                    });
-                }
-                
-                if (exitButton) {
-                    exitButton.addEventListener('click', function() {
-                        window.close();
-                    });
-                }
-            });
-        </script>
-
-        <!-- TensorFlow.js and Teachable Machine dependencies -->
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
-        
         <script src="js/main.js"></script>
     </body>
 </html> 
