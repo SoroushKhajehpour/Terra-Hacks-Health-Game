@@ -9,7 +9,7 @@ const BATTLE_CONFIG = {
     type: Phaser.AUTO,
     parent: 'game-canvas',
     width: 800,
-    height: 680, // Reduced height to account for 140px battle interface
+    height: 650, // Reduced height to account for 140px battle interface
     pixelArt: true,
     backgroundColor: '#000000',
     
@@ -134,6 +134,9 @@ let game;
 function preload() {
     console.log('Preloading assets...');
     
+    // Load background image
+    this.load.image('forest-background', 'assets/forest-background.jpg');
+    
     // TODO: Load sprites, sounds, and other assets
     // this.load.image('player-monster', 'assets/player-monster.png');
     // this.load.image('enemy-monster', 'assets/enemy-monster.png');
@@ -145,12 +148,13 @@ function preload() {
 
 function create() {
     console.log('Creating battle scene...');
-    
+
     // Initialize battle state
     battleState = new BattleState();
     
     // Create background
     createBackground(this);
+    
     
     // Create platforms
     createPlatforms(this);
@@ -175,15 +179,20 @@ function update() {
 
 // Background Creation
 function createBackground(scene) {
-    // Sky gradient (top section)
-    const skyGradient = scene.add.graphics();
-    skyGradient.fillGradientStyle(0x00ACC1, 0x00ACC1, 0x4DD0E1, 0x4DD0E1, 1);
-    skyGradient.fillRect(0, 0, 800, 230);
-    
-    // Grass field (bottom section)
-    const grassGradient = scene.add.graphics();
-    grassGradient.fillGradientStyle(0x388E3C, 0x388E3C, 0x2E7D32, 0x2E7D32, 1);
-    grassGradient.fillRect(0, 230, 800, 230);
+    // Add forest background image
+    const background = scene.add.image(400, 230, 'forest-background');
+    background.setDisplaySize(800, 460); // Scale to fit game dimensions
+    background.setOrigin(0.5, 0.5); // Center the image
+
+        // Add border around the background image
+    const backgroundBorder = scene.add.graphics();
+    backgroundBorder.lineStyle(6,0x8E24AA); // 8px arcade puprle border
+    backgroundBorder.strokeRect(
+        400 - 400, // x: center - half width
+        230 - 230, // y: center - half height  
+        800,       // width
+        460        // height
+    );
 }
 
 // Platform Creation

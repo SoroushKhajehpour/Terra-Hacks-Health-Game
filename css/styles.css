@@ -88,8 +88,8 @@ body {
         0deg,
         transparent,
         transparent 2px,
-        rgba(0, 172, 193, 0.2) 2px,
-        rgba(0, 172, 193, 0.2) 4px
+        rgba(0, 172, 193, 0.03) 2px,
+        rgba(0, 172, 193, 0.08) 4px
     );
     animation: scanline 2s linear infinite;
 }
@@ -501,4 +501,7 @@ body {
     .action-menu{
         height: 50px;
     }
+
+
 }
+
