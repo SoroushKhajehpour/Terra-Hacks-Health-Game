@@ -1,6 +1,7 @@
 // Free alternative to Gemini for voice command mapping using Web Speech API and simple keyword matching
 // This does not require any external AI service or API key
 
+;(function(global) {
 class MenuVoiceControllerFree {
     constructor() {
         this.commands = ['start', 'exit'];
@@ -29,11 +30,12 @@ class MenuVoiceControllerFree {
      */
     recordAndTranscribe() {
         return new Promise((resolve, reject) => {
-            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            const root = typeof window !== 'undefined' ? window : global;
+            if (!('webkitSpeechRecognition' in root || 'SpeechRecognition' in root)) {
                 reject(new Error('Web Speech API is not supported in this browser.'));
                 return;
             }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const SpeechRecognition = root.SpeechRecognition || root.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-US';
             recognition.interimResults = false;
@@ -93,4 +95,5 @@ class MenuVoiceControllerFree {
 }
 
 // Make MenuVoiceControllerFree globally accessible
-window.MenuVoiceControllerFree = MenuVoiceControllerFree;
+global.MenuVoiceControllerFree = MenuVoiceControllerFree;
+})(typeof window !== 'undefined' ? window : this);

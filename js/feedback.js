@@ -1,6 +1,8 @@
+;(function(global) {
 class Feedback {
   constructor(apiKey) {
-    this.GEMINI_API_KEY = apiKey; // Set this to your Gemini API key
+    // Accept API key as argument, or try window.GEMINI_API_KEY, or empty string
+    this.GEMINI_API_KEY = apiKey || (typeof window !== 'undefined' && window.GEMINI_API_KEY) || '';
   }
 
     /**
@@ -151,11 +153,12 @@ class Feedback {
 }
 
 // Load voices when they become available
-if ('speechSynthesis' in window) {
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.addEventListener('voiceschanged', () => {
         // Voices are now loaded
     });
 }
 
 // Make Feedback globally accessible for direct file usage
-window.Feedback = Feedback;
+global.Feedback = Feedback;
+})(typeof window !== 'undefined' ? window : this);

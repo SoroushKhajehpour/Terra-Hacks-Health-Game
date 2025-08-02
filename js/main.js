@@ -60,13 +60,12 @@ console.log('Monster Fighter RPG Game - Layout Loaded');
 // import files
 import { MenuVoiceController } from './menuVoiceController.js';
 import { Feedback } from './feedback.js';
-import dotenv from 'dotenv';
-dotenv.config();
+
+// Set your Gemini API key here (DO NOT use in production, for personal/local use only)
+const GEMINI_API_KEY = '';
 
 var menuVoiceController = new MenuVoiceController();
-var feedback = new Feedback();
-
-let GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+var feedback = new Feedback(GEMINI_API_KEY);
 
 
 // Event listeners for future implementation
@@ -77,4 +76,4 @@ window.addEventListener('load', function() {
 window.addEventListener('resize', function() {
     // TODO: Handle responsive layout changes
     console.log('Window resized - layout adjustments may be needed');
-}); 
+});
