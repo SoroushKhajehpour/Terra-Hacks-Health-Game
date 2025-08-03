@@ -194,7 +194,7 @@ body {
 /* Fitness PAL panel */
 .fitness-pal-panel {
     flex: 1;
-    background: #000000; /* Classic Black */
+    background: #240c42; /* Classic Black */
     border: 3px solid #FF9800; /* Pixel Orange */
     padding: 20px;
     box-shadow: 0 0 0 3px #FFFFFF; /* Bright White outline */
@@ -237,6 +237,7 @@ body {
     
     .right-sidebar {
         min-width: 200px;
+        max-height: 789px;
     }
 }
 
@@ -482,7 +483,7 @@ body {
 
 /* Button Colors Using Game's Color Scheme */
 .squat-btn {
-    background-color: #8E24AA; /* Arcade Purple */
+    background-color: #e11010; /* Arcade Purple */
 }
 
 .lunge-btn {
@@ -494,7 +495,7 @@ body {
 }
 
 .tpose-btn {
-    background-color: #000000; /* Classic Black */
+    background-color: #5e01ff; /* Classic Black */
 }
 
 /* Hover Effects */
