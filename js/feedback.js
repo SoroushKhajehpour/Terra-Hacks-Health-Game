@@ -120,28 +120,38 @@ export class Feedback {
     }
 
     /**
-     * Use text-to-speech to speak the feedback
+     * Use text-to-speech to speak the feedback with cartoonish voice
      */
     speakFeedback(text) {
         if ('speechSynthesis' in window) {
             // Cancel any ongoing speech
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.5; // Higher pitch for friendlier voice
+            
+            // Cartoonish, happy voice settings
+            utterance.rate = 1.1; // Slightly faster for energy
+            utterance.pitch = 1.4; // Higher pitch for cartoonish effect
             utterance.volume = 0.8;
-            // Try to get a higher-pitched (female or child) voice
+            
+            // Try to get a higher-pitched (female or child) voice for cartoonish effect
             const voices = window.speechSynthesis.getVoices();
             const preferredVoice = voices.find(voice =>
-                (voice.name.toLowerCase().includes('female') ||
-                 voice.name.toLowerCase().includes('child') ||
-                 voice.name.toLowerCase().includes('girl') ||
-                 voice.name.toLowerCase().includes('woman') ||
-                 (voice.lang.startsWith('en') && voice.name.toLowerCase().includes('us') && voice.name.toLowerCase().includes('female')))
+                voice.lang.startsWith('en') && (
+                    voice.name.toLowerCase().includes('female') ||
+                    voice.name.toLowerCase().includes('woman') ||
+                    voice.name.toLowerCase().includes('girl') ||
+                    voice.name.toLowerCase().includes('child') ||
+                    voice.name.toLowerCase().includes('zira') ||
+                    voice.name.toLowerCase().includes('hazel') ||
+                    voice.name.toLowerCase().includes('karen') ||
+                    voice.name.toLowerCase().includes('samantha')
+                )
             );
+            
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
             }
+            
             window.speechSynthesis.speak(utterance);
         } else {
             console.warn('Speech synthesis not supported in this browser');
