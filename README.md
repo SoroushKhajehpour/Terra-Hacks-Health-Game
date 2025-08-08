@@ -1,6 +1,6 @@
 # 🥊 BattleFit
 
-**BattleFit** is a browser-based fitness app developed for the **TerraHacks 2025** hackathon. It gamifies health and exercise through interactive voice-driven menus, user feedback mechanisms, and exercise tracking — all built with pure **HTML**, **CSS**, and **JavaScript**.
+**BattleFit** is a browser-based fitness game developed for the **TerraHacks 2025** hackathon. It gamifies health and exercise through interactive voice-driven menus, user feedback mechanisms, and exercise tracking — all built with pure **HTML**, **CSS**, and **JavaScript**.
 
 > No frameworks. No dependencies. Just raw code and creative design.
 
